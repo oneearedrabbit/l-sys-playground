@@ -18,7 +18,7 @@ L-system playground
 
 ## How to
 
-This is a single-file static website that implements an L-system fractal as a web component. CodeMirror is used as an external dependency for a code editor. To use the website, open `index.html` in a brower.
+This is a single-file static website that implements an L-system fractal as a web component. CodeMirror is used as an external dependency for a code editor. To use the website, open `index.html` in a browser.
 
 Web Component example:
 
