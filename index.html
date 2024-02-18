@@ -745,9 +745,6 @@
      }
 
      execute(code) {
-         // TODO 2: extract configuration parameters, `rules' are really code,
-         // with a custom parser such as extract rules and variables
-
          const [rules, config] = parse(code);
 
          const path = execute(rules, {
