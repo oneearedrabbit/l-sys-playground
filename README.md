@@ -37,6 +37,10 @@ Web Component example:
     </web-fractal>
 ```
 
+## Contribute
+
+Found a typo or have an L-system to suggest? Noticed an attribution mistake or want to clarify something? Please file a ticket: https://github.com/oneearedrabbit/l-sys-playground/issues
+
 ## Screenshot
 
 ![image](https://github.com/oneearedrabbit/l-sys-playground/assets/198995/6d4809fd-9e81-4004-a8c7-f5182cd9dd65)
