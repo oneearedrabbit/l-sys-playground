@@ -14,7 +14,6 @@ Here are some L-system rules I gathered from various sources. I apologize for mi
 ```
 
 The intentional decision has been made not to support branching, usually represented by `[` and `]` symbols. I acknowledge that these are powerful operations, yet I prefer to implement them as a fork operation, and I didn't explore this space. 
-L-system playground
 
 ## How to
 
