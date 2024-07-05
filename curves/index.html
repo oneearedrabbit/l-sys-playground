@@ -85,6 +85,22 @@
 
               formula = sin(i / x / y - t)
           </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Catch me"
+              data-creation-date="2024-07-04"
+          >
+              order = 6
+              angle = 120
+
+              A => F+F+F
+              F => F-F+F
+
+              formula = sin(log(i) - t)
+          </web-fractal>
+      </div>
     </div>
 
 <template id="web-fractal-template">
