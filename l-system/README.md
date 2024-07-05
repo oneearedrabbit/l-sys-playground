@@ -43,4 +43,4 @@ Found a typo or have an L-system to suggest? Noticed an attribution mistake or w
 
 ## Screenshot
 
-![image](https://github.com/oneearedrabbit/l-sys-playground/assets/198995/6d4809fd-9e81-4004-a8c7-f5182cd9dd65)
+![image](https://github.com/oneearedrabbit/l-sys-playground/blob/master/l-system/thumbnail.png?raw=true)
