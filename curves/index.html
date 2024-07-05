@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Curves</title>
+    <style>
+     @font-face {
+         font-family: 'fira';
+         src: url('FiraCode-Medium.woff2') format('woff2'), url('FiraCode-Medium') format('woff');
+         font-weight: normal;
+         font-style: normal;
+     }
+     .container {
+         width: 50rem;
+         margin: 0 auto;
+         display: flex;
+         flex-wrap: wrap;
+     }
+     .container .box {
+         flex: 100%;
+         box-sizing: border-box;
+         padding: 10px;
+     }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="box" >
+            <h1>Animated Curves</h1>
+
+            <p>
+                This project is inspired by the ideas found on
+                https://tixy.land. It allows to create a function that will be
+                applied to all points on a curve generated using L-system rules.
+            </p>
+        </div>
+    </div>
+
+    <div class="container">
+      <div class="box">
+          <web-fractal
+              data-name="Spiral"
+              data-creation-date="2024-07-03"
+          >
+              order = 20
+              angle = 90
+
+              A => A+BF+BF
+              B => BF
+
+              formula = sin(i / n * 10 + x + y - t)
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Spiral"
+              data-creation-date="2024-07-03"
+          >
+              order = 20
+              angle = 90
+
+              A => A+BF+BF
+              B => BF
+
+              formula = (x - y) / i - sin(t)
+          </web-fractal>
+      </div>
+    </div>
+
+<template id="web-fractal-template">
+    <style>
+     #fractal {
+         border: 1px solid #d8d8d8;
+         border-radius: 3px;
+         display: flex;
+         flex-direction: row;
+     }
+     #editor {
+         height: 256px;
+         overflow-y: scroll;
+         flex: 1;
+     }
+     #code {
+         margin: 0;
+         height: 256px;
+     }
+     #screen {
+         flex: 0 0 256px;
+     }
+     #display {
+         height: 256px;
+     }
+     #canvas {
+         width: 256px;
+         background-color: #000000;
+     }
+
+     .hidden {
+         display: none;
+     }
+
+     .cm-editor {
+         height: 256px;
+     }
+     .cm-editor .cm-content {
+         font-family: 'fira', monospace;
+         font-size: 1rem;
+     }
+    </style>
+
+    <h2 id="title"></h2>
+    <p id="description"></p>
+    <div id="fractal">
+        <div id="editor">
+            <div id="code"></div>
+            <div class="hidden"><slot></slot></div>
+        </div>
+        <div id="display">
+            <svg preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" version="1.1" id="canvas" width="256" height="256">
+                <path stroke="midnightblue" id="path"></path>
+                <g id="unfold"></path>
+            </svg>
+        </div>
+    </div>
+</template>
+
+<script>
+ function* evaluate(n, axiom, rules) {
+     if (n==0) return yield axiom;
+
+     for(const rule of evaluate(n-1, axiom, rules)) {
+         for (const inst of rule.split("")) {
+             const match = rules.find(([rule]) => rule === inst)
+             match ? yield* match[1] : yield inst;
+         }
+     }
+ }
+
+ function parse(code) {
+     const rules = [[], ...code.split("\n")].reduce((acc, line) => {
+         if (line.match(/=>/) !== null) {
+             return acc.concat([line.split(" => ")])
+         } else {
+             return acc
+         };
+     });
+
+     const config = [{}, ...code.split("\n")].reduce((acc, line) => {
+         if (line.match(/ = /) !== null) {
+             const [key, val] = line.split(" = ")
+             acc[key] = val
+             return acc
+         } else {
+             return acc
+         };
+     })
+
+     return [rules, config];
+ }
+
+ function execute(rules, options) {
+     const TAU = 2 * Math.PI;
+     const distance = 10;
+     const angle = 1 / (360 / options.angle);
+     const position = { x: 0, y: 0 };
+     const points = [Object.assign({}, position)]
+
+     let currentAngle = 1 / (360 / options.currentAngle);
+     const vector = { x: Math.sin(TAU * currentAngle), y: Math.cos(TAU * currentAngle) };
+
+     for (const op of evaluate(options.order, options.axiom, rules)) {
+         switch (op) {
+             case "F":
+                 position.x += vector.x * distance
+                 position.y += vector.y * distance
+                 points.push({ x: position.x, y: position.y })
+                 break;
+             case "-":
+                 currentAngle -= angle;
+                 currentAngle = currentAngle%1;
+                 vector.x = Math.sin(TAU*currentAngle);
+                 vector.y = Math.cos(TAU*currentAngle);
+                 break;
+             case "+":
+                 currentAngle += angle;
+                 currentAngle = currentAngle%1;
+                 vector.x = Math.sin(TAU*currentAngle);
+                 vector.y = Math.cos(TAU*currentAngle);
+                 break;
+         }
+     }
+
+     return points;
+ }
+
+ function viewbox(points) {
+     /* const svg = document.querySelector('svg');
+
+      * const { xMin, xMax, yMin, yMax } = [...svg.children].reduce((acc, el) => {
+      *     const { x, y, width, height } = el.getBBox();
+      *     if (!acc.xMin || x < acc.xMin) acc.xMin = x;
+      *     if (!acc.xMax || x + width > acc.xMax) acc.xMax = x + width;
+      *     if (!acc.yMin || y < acc.yMin) acc.yMin = y;
+      *     if (!acc.yMax || y + height > acc.yMax) acc.yMax = y + height;
+      *     return acc;
+      * }, {});
+      */
+
+     const minX = Math.min(...points.map(point => point.x));
+     const minY = Math.min(...points.map(point => point.y));
+     const maxX = Math.max(...points.map(point => point.x));
+     const maxY = Math.max(...points.map(point => point.y));
+     const border = 15;
+
+     return [minX - border, minY - border, maxX - minX + 2 * border, maxY - minY + 2 * border];
+ }
+
+ function path(points) {
+     const first = points.shift();
+     let path = `M${first.x} ${first.y}`
+     points.forEach(point => path += ` L${point.x} ${point.y}`);
+
+     return path;
+ }
+
+ function interpolate(path, total) {
+     const points = [];
+     const length = path.getTotalLength();
+     total = total || length / 10;
+     const distance = length / total;
+     let current = 0;
+
+     while (current <= length) {
+         const point = path.getPointAtLength(current);
+         points.push({ x: point.x, y: point.y });
+
+         current += distance;
+     }
+
+     return points;
+ }
+
+ function unfold(points, options) {
+     let elements = '';
+
+     const now = Date.now();
+     const t = (now - options.startTime) / 1_000;
+     const n = points.length;
+
+     points.forEach((point, i) => {
+         const x = point.x;
+         const y = point.y;
+
+         let val;
+         try {
+             const formula = `with(Math) { ${options.formula} }`;
+             val = eval(formula);
+         } catch {
+             val = 0;
+         }
+
+         // The absolute value determines the size of the circle
+         const radius = Math.min(1, Math.abs(val)) * 5;
+
+         // The sign determines the colour of the circle
+         let color;
+         if (val > 0) color = 'white'
+         else if (val < 0) color = 'red'
+         else color = 'black';
+
+         elements += `<circle cx="${x}" cy="${y}" r="${radius}" fill="${color}"/>`;
+     });
+     return elements;
+ }
+</script>
+
+<script type="importmap">
+ {
+     "imports": {
+         "codemirror/": "https://deno.land/x/codemirror_esm@v6.0.1/esm/"
+     }
+ }
+</script>
+
+<script async type="module">
+ import { EditorView } from "codemirror/codemirror/dist/index.js";
+ import { highlightActiveLine, dropCursor, keymap } from "codemirror/view/dist/index.js";
+ import { defaultKeymap, history, historyKeymap } from "codemirror/commands/dist/index.js";
+
+ // TODO: lazy loading: https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver
+ class WebFractal extends HTMLElement {
+     constructor() {
+         super();
+
+         this.name = this.getAttribute("data-name");
+         this.creator = this.getAttribute("data-creator");
+         this.creationDate = this.getAttribute("data-creation-date");
+         this.description = this.getAttribute("data-description");
+
+         const font = document.createElement("link");
+         font.href = "/fonts.css";
+         font.rel = "stylesheet"
+         document.head.appendChild(font);
+
+         const shadowRoot = this.attachShadow({ mode: 'open' });
+
+         const template = document.getElementById('web-fractal-template');
+         const instance = template.content.cloneNode(true);
+         shadowRoot.appendChild(instance);
+
+         shadowRoot.querySelector('#title').innerHTML = this.name;
+         shadowRoot.querySelector('#description').innerHTML = this.description;
+
+         this.canvas = shadowRoot.querySelector('#canvas');
+         this.path = shadowRoot.querySelector('#path');
+         this.unfold = shadowRoot.querySelector('#unfold');
+
+         this.startTime = Date.now();
+
+         // Code editor
+         let theme = EditorView.theme({
+             "&": {
+                 color: "white",
+                 backgroundColor: "#034",
+                 "font-size": ".9rem"
+             },
+             ".cm-content": {
+                 caretColor: "#0e9"
+             },
+             "&.cm-focused .cm-cursor": {
+                 borderLeftColor: "#0e9"
+             },
+             "&.cm-focused .cm-selectionBackground, ::selection": {
+                 backgroundColor: "#074"
+             },
+             ".cm-gutters": {
+                 backgroundColor: "#045",
+                 color: "#ddd",
+                 border: "none"
+             }
+         }, { dark: true })
+
+         this.codemirror = new EditorView({
+             doc: null,
+             extensions: [
+                 theme,
+                 history(),
+                 dropCursor(),
+                 highlightActiveLine(),
+                 EditorView.lineWrapping,
+                 keymap.of([
+                     ...defaultKeymap,
+                     ...historyKeymap,
+                 ]),
+                 EditorView.updateListener.of(v => {
+                     if (v.docChanged) {
+                         this.handleInput();
+                     }
+                 }),
+             ],
+             parent: shadowRoot.querySelector('#code'),
+         });
+     }
+
+     update() {
+         this.unfold.innerHTML = unfold(
+             interpolate(this.path, this.config.points),
+             {
+                 formula: this.config.formula,
+                 startTime: this.startTime
+             }
+         );
+         this.animationFrame = requestAnimationFrame(this.update.bind(this));
+     }
+
+     execute(code) {
+         const [rules, config] = parse(code);
+         this.rules = rules;
+         this.config = config;
+
+         const points = execute(rules, {
+             axiom: "A",
+             order: config.order,
+             angle: config.angle,
+             currentAngle: 90,
+         })
+
+         this.canvas.setAttribute("viewBox", viewbox(points));
+         this.path.setAttribute("d", path(points));
+         cancelAnimationFrame(this.animationFrame);
+         this.update();
+     }
+
+     updateEditor(content) {
+         const code = content.split("\n").reduce((acc, line) => [acc, line.trim()].join("\n"))
+
+         this.execute(code);
+
+         this.codemirror.dispatch({
+             changes: {
+                 from: 0, to: this.codemirror.state.doc.length, insert: code
+             }
+         });
+     }
+
+     handleInput() {
+         // Autorun on every change
+         try {
+             const code = this.codemirror.state.doc.toString();
+             this.execute(code)
+         } catch (error) {
+             console.error("Error executing script:", error);
+         }
+
+     }
+
+     connectedCallback() {
+         // Transfer slotted content to the contenteditable div
+         this.updateEditor(this.textContent.trim());
+
+         this.handleInput();
+     }
+ }
+
+ customElements.define('web-fractal', WebFractal);
+</script>
+</body>
+</html>
