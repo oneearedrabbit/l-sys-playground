@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L-system playground</title>
+    <style>
+     @font-face {
+         font-family: 'fira';
+         src: url('FiraCode-Medium.woff2') format('woff2'), url('FiraCode-Medium') format('woff');
+         font-weight: normal;
+         font-style: normal;
+     }
+     .container {
+         width: 50rem;
+         margin: 0 auto;
+         display: flex;
+         flex-wrap: wrap;
+     }
+     .container .box {
+         flex: 100%;
+         box-sizing: border-box;
+         padding: 10px;
+     }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="box" >
+            <h1>L-system curves</h1>
+
+            <p>
+                An L-system, or Lindenmayer system, is a parallel rewriting
+                system and a type of formal grammar used to model the growth of
+                biological organisms. L-systems can also be used to generate
+                space-filling curves and to describe mathematical processes,
+                such as fractals, through the iteration of production rules.
+            </p>
+
+            <p>
+                Here are some L-system rules I gathered from various sources. I
+                apologize for missing attributions; some original sources are
+                lost and I need to recover them. Each curve is interactive and
+                can be modified as needed.
+            </p>
+
+            <p>
+                <ul>
+                    <li><code>F</code>: Move forward by line length drawing a line</li>
+                    <li><code>-</code>: Turn left by turning angle</li>
+                    <li><code>+</code>: Turn right by turning angle</li>
+                    <li><code>A</code>: An axiom</li>
+                    <li><code>A => B</code>: A rule</li>
+                    <li><code>setting = value</code>: A configuration setting</li>
+                </ul>
+            </p>
+
+            <p>
+                The intentional decision has been made not to support branching,
+                usually represented by <code>[</code> and <code>]</code> symbols. 
+                Hence, no L-system rules for trees or plants. I acknowledge that
+                these are powerful operations, yet my mental model suggests that
+                they could designed as a fork operation, and I didn't explore this
+                space yet.
+            </p>
+        </div>
+    </div>
+
+    <div class="container">
+      <!-- https://www.robertdickau.com/lsys2d.html -->
+      <div class="box">
+          <web-fractal
+              data-name="Peano Curve"
+              data-creation-date="2024-02-14"
+              data-description="In geometry, the Peano curve is the first example of a space-filling curve to be discovered, by Giuseppe Peano in 1890. Peano's curve is a surjective, continuous function from the unit interval onto the unit square, however it is not injective."
+          >
+              order = 3
+              angle = 90
+
+              A => AFBFA-F-BFAFB+F+AFBFA
+              B => BFAFB+F+AFBFA-F-BFAFB
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Peano Octagon"
+              data-creation-date="2024-02-18"
+              data-description=""
+          >
+              order = 4
+              angle = 45
+
+              A => -FX
+              X => FX-FY-FX+FY+FX+FY+FX+FY+FX-FY-FX-FY-FX-FY-FX+FY+FX
+              F => E
+              Y => FY
+          </web-fractal>
+      </div>
+
+      <!-- https://en.wikipedia.org/wiki/Hilbert_curve -->
+      <div class="box">
+          <web-fractal
+              data-name="Hilbert Curve"
+              data-creation-date="2024-02-14"
+              data-description="The Hilbert curve (also known as the Hilbert space-filling curve) is a continuous fractal space-filling curve first described by the German mathematician David Hilbert in 1891."
+          >
+              order = 5
+              angle = 90
+
+              A => +BF-AFA-FB+
+              B => -AF+BFB+FA-
+          </web-fractal>
+      </div>
+
+      <!-- https://en.wikipedia.org/wiki/Moore_curve -->
+      <div class="box">
+          <web-fractal
+              data-name="Moore Curve"
+              data-creation-date="2024-02-14"
+              data-description="A Moore curve (after E. H. Moore) is a continuous fractal space-filling curve which is a variant of the Hilbert curve. Precisely, it is the loop version of the Hilbert curve, and it may be thought as the union of four copies of the Hilbert curves combined in such a way to make the endpoints coincide."
+          >
+              order = 5
+              angle = 90
+
+              A => LFL+F+LFL
+              L => -RF+LFL+FR-
+              R => +LF-RFR-FL+
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="H-indexing"
+              data-creator="oneearedrabbit"
+              data-creation-date="2024-02-12"
+              data-description="A new two-dimensional (2-D) indexing scheme called H-indexing, which has superior (possibly optimal) locality in comparison with the well-known Hilbert indexings. H-indexings form a Hamiltonian cycle that are optimally locality-preserving among all cyclic indexings."
+          >
+              order = 4
+              angle = 90
+
+              A => BF-F-BFFFC-F-FC+F+BF-F-BFFFC-F-FC
+              B => BFFFC-F-FC+F+B
+              C => C+F+BF-F-BFFFC
+          </web-fractal>
+      </div>
+
+      <!-- https://en.wikipedia.org/wiki/Koch_snowflake -->
+      <div class="box">
+          <web-fractal
+              data-name="Koch Snowflake"
+              data-creation-date="2024-02-14"
+              data-description="The Koch snowflake is a fractal curve and one of the earliest fractals to have been described. It is based on the Koch curve, which appeared in a 1904 paper titled 'On a Continuous Curve Without Tangents, Constructible from Elementary Geometry' by the Swedish mathematician Helge von Koch."
+          >
+              order = 4
+              angle = 60
+
+              A => F++F++F
+              F => F-F++F-F
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Koch Anti-Snowflake"
+              data-creation-date="2024-02-14"
+              data-description="A fractal derived from the Koch snowflake, the inverse of the original fractal."
+          >
+              order = 4
+              angle = 60
+
+              A => F++F++F
+              F => F+F--F+F
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Square Koch Curve"
+              data-creation-date="2024-02-14"
+              data-description="The classic Koch fractal curve is recursively created by starting with a line segment and then recursively adding a triangular bend in the center of each segment. Variations can be created by using a square shape instead of a triangle in the replacement rule. The type 1 curve is a direct analogy to the classic Koch curve, replacing each line segment with five smaller segments placed at right angles."
+          >
+              order = 4
+              angle = 90
+
+              A => F+F+F+F
+              F => F+F-F-F+F
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Quadratic Koch Curve"
+              data-creation-date="2024-02-15"
+          >
+              order = 4
+              angle = 90
+
+              A => FF+FF+FF+FF
+              F => F+F-F-F+F
+          </web-fractal>
+      </div>
+
+      <!-- https://en.wikipedia.org/wiki/Sierpi%C5%84ski_curve -->
+      <div class="box">
+          <web-fractal
+              data-name="Sierpinski Square Curve"
+              data-creation-date="2024-02-14"
+              data-description="The Sierpinski Curve is a space-filling curve and is therefore related to the Hilbert Curve and also the Arrowhead Curve. The 'square' based variant of the Sierpinski curve. It is constructed by dividing a square into nine smaller squares and removing the central square, then recursively applying the same process to each remaining square."
+          >
+              order = 4
+              angle = 90
+
+              A => BF+F+BF+F
+              B => BF-F+F-BF+F+BF-F+F-B
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <!--
+               ???
+               angle = 120
+               A => F-A-A
+               F => F-A+F+F+A
+               A => AA
+          -->
+          <web-fractal
+              data-name="Sierpinski Triangle"
+              data-creation-date="2024-02-14"
+              data-description="The Sierpiński triangle (sometimes spelled Sierpinski), also called the Sierpiński gasket or Sierpiński sieve, is a fractal attractive fixed set with the overall shape of an equilateral triangle, subdivided recursively into smaller equilateral triangles. Originally constructed as a curve, this is one of the basic examples of self-similar sets—that is, it is a mathematically generated pattern that is reproducible at any magnification or reduction."
+          >
+              order = 5
+              angle = 60
+
+              A => FXF--FF--FF
+              F => FF
+              X => --FXF++FXF++FXF--
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Sierpinski Triangle"
+              data-creation-date="2024-02-14"
+          >
+              order = 4
+              angle = 60
+
+              A => --FAF++FAF++FAF--
+              F => FF
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Sierpinski Arrowhead"
+              data-creation-date="2024-02-14"
+              data-description="The Sierpiński arrowhead curve is a fractal curve similar in appearance and identical in limit to the Sierpiński triangle. The Sierpiński arrowhead curve draws an equilateral triangle with triangular holes at equal intervals."
+          >
+              order = 5
+              angle = 60
+
+              A => BF+AF+B
+              B => AF-BF-A
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Square Sierpinski"
+              data-creation-date="2024-02-15"
+              data-description="A square Sierpinski space-filling curve is a fractal curve that fills the entire space within a square by subdividing it into smaller squares and continually repeating a specific pattern within each smaller square. This type of curve is constructed by recursively dividing each square into smaller squares and connecting their midpoints in a specific pattern, typically following a Sierpinski curve algorithm."
+          >
+              order = 6
+              angle = 90
+
+              A => X-X
+              X => XFX-XFX
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Dragon Curve"
+              data-creation-date="2024-02-14"
+              data-description="A dragon curve is any member of a family of self-similar fractal curves. The dragon curve is probably most commonly thought of as the shape that is generated from repeatedly folding a strip of paper in half, although there are other curves that are called dragon curves that are generated differently."
+          >
+              order = 8
+              angle = 90
+
+              A => A+BF+
+              B => -FA-B
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Hexagonal Gosper"
+              data-creation-date="2024-02-14"
+              data-description="The Gosper curve, named after Bill Gosper, also known as the Peano-Gosper Curve and the flowsnake (a spoonerism of snowflake), is a space-filling curve whose limit set is rep-7. It is a fractal curve similar in its construction to the dragon curve and the Hilbert curve."
+          >
+              order = 3
+              angle = 60
+
+              A => A+BF++BF-FA--FAFA-BF+
+              B => -FA+BFBF++BF+FA--FA-B
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Quadratic Gosper"
+              data-creation-date="2024-02-15"
+          >
+              order = 3
+              angle = 90
+
+              A => -YF
+              X => XFX-YF-YF+FX+FX-YF-YFFX+YF+FXFXYF-FX+YF+FXFX+YF-FXYF-YF-FX+FX+YFYF-
+              Y => +FXFX-YF-YF+FX+FXYF+FX-YFYF-FX-YF+FXYFYF-FX-YFFX+FX+YF-YF-FX+FX+YFY
+          </web-fractal>
+      </div>
+
+      <!-- https://en.wikipedia.org/wiki/Minkowski_sausage -->
+      <div class="box">
+          <web-fractal
+              data-name="Minkowski Sausage"
+              data-creation-date="2024-02-14"
+              data-description="The Minkowski sausage or Minkowski curve is a fractal first proposed by and named for Hermann Minkowski as well as its casual resemblance to a sausage or sausage links. The initiator is a line segment and the generator is a broken line of eight parts one fourth the length."
+          >
+              order = 3
+              angle = 90
+
+              A => F+F+F+F
+              F => F-F+F+FFF-F-F+F
+          </web-fractal>
+      </div>
+
+      <!-- https://jobtalle.com/lindenmayer_systems.html -->
+      <div class="box">
+          <web-fractal
+              data-name="Mosaic"
+              data-creation-date="2024-02-14"
+          >
+              order = 4
+              angle = 90
+
+              A => F-F-F-F
+              F => FF-F+F-F-FF
+          </web-fractal>
+      </div>
+
+      <!-- https://www.paulbourke.net/fractals/lsys/ -->
+      <div class="box">
+          <web-fractal
+              data-name="Triangle"
+              data-creation-date="2024-02-15"
+          >
+              order = 6
+              angle = 120
+
+              A => F+F+F
+              F => F-F+F
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Crystal"
+              data-creation-date="2024-02-15"
+          >
+              order = 4
+              angle = 90
+
+              A => F+F+F+F
+              F => FF+F++F+F
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Board"
+              data-creation-date="2024-02-15"
+          >
+              order = 4
+              angle = 90
+
+              A => F+F+F+F
+              F => FF+F+F+F+FF
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Cross"
+              data-creation-date="2024-02-15"
+          >
+              order = 5
+              angle = 90
+
+              A => F+F+F+F
+              F => F+FF++F+F
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Cross 2"
+              data-creation-date="2024-02-15"
+          >
+              order = 5
+              angle = 90
+
+              A => F+F+F+F
+              F => F+F-F+F+F
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Pentaplexity"
+              data-creation-date="2024-02-15"
+          >
+              order = 4
+              angle = 36
+
+              A => F++F++F++F++F
+              F => F++F++F+++++F-F++F
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Tiles"
+              data-creation-date="2024-02-15"
+          >
+              order = 4
+              angle = 90
+
+              A => F+F+F+F
+              F => FF+F-F+F+FF
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Rings"
+              data-creation-date="2024-02-15"
+          >
+              order = 4
+              angle = 90
+
+              A => F+F+F+F
+              F => FF+F+F+F+F+F-F
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Lévy curve"
+              data-creation-date="2024-02-15"
+          >
+              order = 8
+              angle = 45
+
+              A => F
+              F => -F++F-
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Krishna Anklets"
+              data-creation-date="2024-02-15"
+          >
+              order = 5
+              angle = 45
+
+              A => -X--X
+              X => XFX--XFX
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Pentigree"
+              data-creation-date="2024-02-18"
+          >
+              order = 4
+              angle = 72
+
+              A => F-F-F-F-F
+              F => F-F++F+F-F-F
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Spiral"
+              data-creation-date="2024-07-03"
+          >
+              order = 20
+              angle = 90
+
+              A => A+BF+BF
+              B => BF
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Hexagon Spiral"
+              data-creation-date="2024-07-03"
+          >        
+              order = 10
+              angle = 60
+
+              A => A+BF+B+BF+BF+BF+BF
+              B => BF
+          </web-fractal>
+      </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Gosper?"
+              data-creation-date="2024-07-03"
+          >      
+              order = 3
+              angle = 90
+
+              A => AF+BFB+FA-F-AFAFA-FBFB+
+              B => -AFAF+BFBFB+F+BF-AFA-FB
+          </web-fractal>
+      </div>
+
+      <!-- https://fedimser.github.io/l-systems.html -->
+      <div class="box">
+          <web-fractal
+              data-name="Hex-7-B"
+              data-creation-date="2024-02-18"
+          >
+              order = 4
+              angle = 30
+
+              A => X
+              F => E
+              X => -F++F-X-F--F+Y---F--F+Y+F++F-X+++F++F-X-F++F-X+++F--F+Y--
+              Y => +F++F-X-F--F+Y+F--F+Y---F--F+Y---F++F-X+++F++F-X+++F--F+Y
+          </web-fractal>
+      </div>
+    </div>
+
+<template id="web-fractal-template">
+    <style>
+     #fractal {
+         border: 1px solid #d8d8d8;
+         border-radius: 3px;
+         display: flex;
+         flex-direction: row;
+     }
+     #editor {
+         height: 256px;
+         overflow-y: scroll;
+         flex: 1;
+     }
+     #code {
+         margin: 0;
+         height: 256px;
+     }
+     #screen {
+         flex: 0 0 256px;
+     }
+     #display {
+         height: 256px;
+     }
+     #canvas {
+         width: 256px;
+         background-color: #000000;
+     }
+
+     .hidden {
+         display: none;
+     }
+
+     .cm-editor {
+         height: 256px;
+     }
+     .cm-editor .cm-content {
+         font-family: 'fira', monospace;
+         font-size: 1rem;
+     }
+    </style>
+
+    <h2 id="title"></h2>
+    <p id="description"></p>
+    <div id="fractal">
+        <div id="editor">
+            <div id="code"></div>
+            <div class="hidden"><slot></slot></div>
+        </div>
+        <div id="display">
+            <canvas id="canvas" width="256" height="256"></canvas>
+        </div>
+    </div>
+</template>
+
+<script>
+ function* evaluate(n, axiom, rules) {
+     if (n==0) return yield axiom;
+
+     for(const rule of evaluate(n-1, axiom, rules)) {
+         for (const inst of rule.split("")) {
+             const match = rules.find(([rule]) => rule === inst)
+             match ? yield* match[1] : yield inst;
+         }
+     }
+ }
+
+ function parse(code) {
+     const rules = [[], ...code.split("\n")].reduce((acc, line) => {
+         if (line.match(/=>/) !== null) {
+             return acc.concat([line.split(" => ")])
+         } else {
+             return acc
+         };
+     });
+
+     const config = [{}, ...code.split("\n")].reduce((acc, line) => {
+         if (line.match(/ = /) !== null) {
+             const [key, val] = line.split(" = ")
+             acc[key] = val
+             return acc
+         } else {
+             return acc
+         };
+     })
+
+    return [rules, config];
+ }
+
+ function execute(rules, options) {
+     const TAU = 2 * Math.PI;
+     const distance = 10;
+     const angle = 1 / (360 / options.angle);
+     const position = { x: 0, y: 0 };
+     const path = [Object.assign({}, position)]
+
+     let currentAngle = 1 / (360 / options.currentAngle);
+     const vector = { x: Math.sin(TAU * currentAngle), y: Math.cos(TAU * currentAngle) };
+
+     for (const op of evaluate(options.order, options.axiom, rules)) {
+         switch (op) {
+             case "F":
+                 position.x += vector.x * distance
+                 position.y += vector.y * distance
+                 path.push({ x: position.x, y: position.y })
+                 break;
+             case "-":
+                 currentAngle -= angle;
+                 currentAngle = currentAngle%1;
+                 vector.x = Math.sin(TAU*currentAngle);
+                 vector.y = Math.cos(TAU*currentAngle);
+                 break;
+             case "+":
+                 currentAngle += angle;
+                 currentAngle = currentAngle%1;
+                 vector.x = Math.sin(TAU*currentAngle);
+                 vector.y = Math.cos(TAU*currentAngle);
+                 break;
+         }
+     }
+
+     return path;
+ }
+
+ function draw(path, canvas) {
+     const minX = Math.min(...path.map(point => point.x));
+     const minY = Math.min(...path.map(point => point.y));
+     const maxX = Math.max(...path.map(point => point.x));
+     const maxY = Math.max(...path.map(point => point.y));
+     const centerX = minX + (maxX - minX) / 2;
+     const centerY = minY + (maxY - minY) / 2;
+     const border = 15;
+     const scale = Math.min(1,
+                            (canvas.width - border * 2) / (maxX - minX),
+                            (canvas.height - border * 2) / (maxY - minY));
+
+     const ctx = canvas.getContext('2d');
+     ctx.strokeStyle = 'white';
+     ctx.lineWidth = 1;
+
+     ctx.resetTransform();
+     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+     ctx.translate(canvas.width / 2 - centerX * scale, canvas.height / 2 - centerY * scale);
+
+     ctx.beginPath();
+     ctx.moveTo(path[0].x * scale, path[0].y * scale);
+     path.forEach(point => ctx.lineTo(point.x * scale, point.y * scale))
+     ctx.stroke();
+ }
+</script>
+
+<script type="importmap">
+ {
+     "imports": {
+         "codemirror/": "https://deno.land/x/codemirror_esm@v6.0.1/esm/"
+     }
+ }
+</script>
+
+<script async type="module">
+ import { EditorView } from "codemirror/codemirror/dist/index.js";
+ import { highlightActiveLine, dropCursor, keymap } from "codemirror/view/dist/index.js";
+ import { defaultKeymap, history, historyKeymap } from "codemirror/commands/dist/index.js";
+
+ // TODO: lazy loading: https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver
+ class WebFractal extends HTMLElement {
+     constructor() {
+         super();
+
+         this.name = this.getAttribute("data-name");
+         this.creator = this.getAttribute("data-creator");
+         this.creationDate = this.getAttribute("data-creation-date");
+         this.description = this.getAttribute("data-description");
+
+         const font = document.createElement("link");
+         font.href = "/fonts.css";
+         font.rel = "stylesheet"
+         document.head.appendChild(font);
+
+         const shadowRoot = this.attachShadow({ mode: 'open' });
+
+         const template = document.getElementById('web-fractal-template');
+         const instance = template.content.cloneNode(true);
+         shadowRoot.appendChild(instance);
+
+         shadowRoot.querySelector('#title').innerHTML = this.name;
+         shadowRoot.querySelector('#description').innerHTML = this.description;
+
+         this.canvas = shadowRoot.querySelector('#canvas');
+
+         // Code editor
+         let theme = EditorView.theme({
+             "&": {
+                 color: "white",
+                 backgroundColor: "#034",
+                 "font-size": ".9rem"
+             },
+             ".cm-content": {
+                 caretColor: "#0e9"
+             },
+             "&.cm-focused .cm-cursor": {
+                 borderLeftColor: "#0e9"
+             },
+             "&.cm-focused .cm-selectionBackground, ::selection": {
+                 backgroundColor: "#074"
+             },
+             ".cm-gutters": {
+                 backgroundColor: "#045",
+                 color: "#ddd",
+                 border: "none"
+             }
+         }, { dark: true })
+
+         this.codemirror = new EditorView({
+             doc: null,
+             extensions: [
+                 theme,
+                 history(),
+                 dropCursor(),
+                 highlightActiveLine(),
+                 EditorView.lineWrapping,
+                 keymap.of([
+                     ...defaultKeymap,
+                     ...historyKeymap,
+                 ]),
+                 EditorView.updateListener.of(v => {
+                     if (v.docChanged) {
+                         this.handleInput();
+                     }
+                 }),
+             ],
+             parent: shadowRoot.querySelector('#code'),
+         });
+     }
+
+     execute(code) {
+         const [rules, config] = parse(code);
+
+         const path = execute(rules, {
+             axiom: "A",
+             order: config.order,
+             angle: config.angle,
+             currentAngle: 90,
+         })
+
+         draw(path, this.canvas);
+     }
+
+     updateEditor(content) {
+         const code = content.split("\n").reduce((acc, line) => [acc, line.trim()].join("\n"))
+
+         this.execute(code);
+
+         this.codemirror.dispatch({
+             changes: {
+                 from: 0, to: this.codemirror.state.doc.length, insert: code
+             }
+         });
+     }
+
+     handleInput() {
+         // Autorun on every change
+
+         try {
+             const code = this.codemirror.state.doc.toString();
+             this.execute(code)
+         } catch (error) {
+             console.error("Error executing script:", error);
+         }
+
+     }
+
+     connectedCallback() {
+         // Transfer slotted content to the contenteditable div
+         this.updateEditor(this.textContent.trim());
+
+         this.handleInput();
+     }
+ }
+
+ customElements.define('web-fractal', WebFractal);
+</script>
+</body>
+</html>
