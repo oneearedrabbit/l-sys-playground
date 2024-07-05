@@ -55,7 +55,7 @@
 
       <div class="box">
           <web-fractal
-              data-name="Spiral"
+              data-name="Flame"
               data-creation-date="2024-07-03"
           >
               order = 20
@@ -70,6 +70,21 @@
               formula = (x - y) / i - sin(t)
           </web-fractal>
       </div>
+
+      <div class="box">
+          <web-fractal
+              data-name="Multiplicative inverse"
+              data-creation-date="2024-07-03"
+          >
+              order = 4
+              angle = 90
+
+              A => BF-F-BFFFC-F-FC+F+BF-F-BFFFC-F-FC
+              B => BFFFC-F-FC+F+B
+              C => C+F+BF-F-BFFFC
+
+              formula = sin(i / x / y - t)
+          </web-fractal>
     </div>
 
 <template id="web-fractal-template">
